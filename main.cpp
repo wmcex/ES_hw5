@@ -8,14 +8,22 @@
 // Adjust pin name to your board specification.
 // You can use LED1/LED2/LED3/LED4 if any is connected to PWM capable pin,
 // or use any PWM capable pin, and see generated signal on logical analyzer.
-PwmOut led(LED1);
+PwmOut signal(LED1);
 
-int main()
-{
-    // specify period first
-    led.period(4.0f);      // 4 second period
-    led.write(0.50f);      // 50% duty cycle, relative to period
-    //led = 0.5f;          // shorthand for led.write()
-    //led.pulsewidth(2);   // alternative to led.write, set duty cycle time in seconds
-    while (1);
+int main() {
+    int duty = 0;   // unit:%
+    signal.period_ms(1);     // pwm frequency set 1kHz.
+    
+    while(1) {
+        // until 100%, increase by 5% in 50ms intervals
+        for (; duty <= 100; duty += 5) {
+            signal = duty / 100.0;
+            thread_sleep_for(50);
+        }
+        // until 0%, decrease by 5% in 50ms intervals
+        for (; duty >= 0; duty -= 5) {
+            signal = duty / 100.0;
+            thread_sleep_for(50);
+        }
+    }
 }
